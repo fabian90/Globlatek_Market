@@ -1,0 +1,14 @@
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\Globaltek_Market.Common.dll
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\Globaltek_Market.Common.pdb
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\obj\Debug\Globaltek_Market.Common.csproj.AssemblyReference.cache
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\obj\Debug\Globaltek_Market.Common.csproj.CoreCompileInputs.cache
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\obj\Debug\Globaltek_Market.Common.dll
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\obj\Debug\Globaltek_Market.Common.pdb
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\AutoMapper.dll
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\Globaltek_Market.Infraestructure.dll
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\EntityFramework.dll
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\Globaltek_Market.Infraestructure.pdb
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\Globaltek_Market.Infraestructure.dll.config
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\AutoMapper.xml
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\bin\Debug\EntityFramework.xml
+C:\Users\rvt_r\Documents\Visual Studio 2022\Project\Globaltek_Market_Prueba\Globaltek_Market.Common\obj\Debug\Globaltek_Market.Common.csproj.CopyComplete

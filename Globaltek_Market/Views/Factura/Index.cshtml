@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Globaltek_Market.Infraestructure.Dtos.FacturaDto>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.NumeroFactura)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TipoDePago)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DocumentoCliente)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NombreCliente)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Subtotal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Descuento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IVA)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalDescuento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalImpuesto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Total)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.NumeroFactura)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Fecha)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TipoDePago)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DocumentoCliente)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NombreCliente)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Subtotal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Descuento)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IVA)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalDescuento)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalImpuesto)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Total)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.IdFactura }) |
+            @Html.ActionLink("Details", "Details", new { id=item.IdFactura }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.IdFactura })
+        </td>
+    </tr>
+}
+
+</table>
