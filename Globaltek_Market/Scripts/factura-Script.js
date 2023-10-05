@@ -1,4 +1,185 @@
-﻿
+﻿$(document).ready(function () {
+    $("#formCrearDetalle").submit(function (event) {
+        event.preventDefault(); // Evitar el envío del formulario por defecto.
+        var formData = $(this).serialize(); // Serializar los datos del formulario.
+        $.ajax({
+            type: "POST",
+            url: "/Factura/CrearDetalle",
+            data: formData,
+            dataType: "json",
+            success: function (result) {
+                console.log(JSON.stringify(result));
+                // Maneja la respuesta del servidor aquí, por ejemplo, puedes mostrar un mensaje de éxito.
+                var nuevaFila = $("<tr>");
+                nuevaFila.append($("<td>").text(result.detalle.IdDetalle));
+                nuevaFila.append($("<td>").text(result.detalle.IdFactura));
+                nuevaFila.append($("<td>").text(result.producto.Nombre));
+                nuevaFila.data("idproducto", result.detalle.IdProducto);
+                nuevaFila.append($("<td>").text(result.detalle.Cantidad));
+                nuevaFila.append($("<td>").text(result.detalle.PrecioUnitario));
+                nuevaFila.append($("<td>").text(result.detalle.Cantidad * result.detalle.PrecioUnitario));
+                var botonEliminar = '<button class="btn btn-danger eliminar-detalle" data-detalle-id="' + result.detalle.IdDetalle + '">Eliminar</button>';
+                nuevaFila.append($(" <td>").html(botonEliminar));
+                $("#tablaDetalles tbody").append(nuevaFila);
+                alert("Detalle creado correctamente.");
+                // Limpiar campos
+                $("#IdProducto").val(""); // Reemplaza "#IdProducto" con el ID de tu campo
+                $("#Cantidad").val("");    // Reemplaza "#Cantidad" con el ID de tu campo
+                $("#PrecioUnitario").val(""); // Reemplaza "#PrecioUnitario" con el ID de tu campo
+                calcularSubTotalDetalle()
+            },
+            error: function (error) {
+                // Maneja cualquier error que ocurra durante la solicitud AJAX.
+                alert("Ocurrió un error al crear el detalle.");
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    $("#formCrearFactura").submit(function (event) {
+        event.preventDefault(); // Evitar el envío del formulario por defecto.
+        $("#TotalDescuento").prop("disabled", false);
+        $("#Subtotal").prop("disabled", false);
+        $("#TotalImpuesto").prop("disabled", false);
+        $("#Total").prop("disabled", false);
+        var formData = $(this).serialize(); // Serializar los datos del formulario.
+        console.log(JSON.stringify("Crear factura: " + formData));
+        $.ajax({
+            type: "POST",
+            url: "/Factura/Create",
+            data: formData,
+            dataType: "json",
+            success: function (result) {
+                $("#TotalDescuento").prop("disabled", true);
+                $("#Subtotal").prop("disabled", true);
+                $("#TotalImpuesto").prop("disabled", true);
+                $("#Total").prop("disabled", true);
+                console.log("Resultado: " + JSON.stringify(result));
+                if (result.success === false) {
+                    if (result.errors && result.errors.length > 0) {
+                        // Limpiar y mostrar la lista de errores en el modal
+                        $('#errorList').empty();
+                        $.each(result.errors, function (index, error) {
+                            $('#errorList').append('<li>' + error + '</li>');
+                        });
+
+                        // Mostrar el modal de errores
+                        $('#errorModal').modal('show');
+                    }
+                }
+                if (result.ultimaFac != 0) {
+                    console.log("factura: " + result.ultimaFac)
+                    $("#NumeroFactura").val(result.ultimoNumFact);
+                    Actualizados(result.ultimoNumFact);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("estatus: " + xhr.status);
+                if (xhr.status === 400) {
+                    var response = xhr.responseJSON;
+                    if (response.errors && response.errors.length > 0) {
+                        // Manejar los errores, por ejemplo, mostrarlos en una alerta
+                        var errorMessage = response.errors.join('\n');
+                        alert(errorMessage);
+                    }
+                } else {
+                    // Otra lógica de manejo de errores si es necesario
+                    alert('Error en la solicitud.');
+                }
+                $("#TotalDescuento").prop("disabled", true);
+                $("#Subtotal").prop("disabled", true);
+                $("#TotalImpuesto").prop("disabled", true);
+                $("#Total").prop("disabled", true);
+            }
+        });
+    });
+});
+
+
+function Actualizados(idfactura) {
+    console.log("Si pasa: " + idfactura);
+    // Obtener los datos de la tabla y convertirlos a un formato que puedas enviar al controlador
+    var datos = [];
+    $("#tablaDetalles tbody tr").each(function () {
+        var fila = $(this);
+        var dato = {
+            IdDetalle: parseInt(fila.find("td:eq(0)").text()), // ID en la primera columna
+            //IdFactura: fila.find("td:eq(1)").text(), // Factura en la segunda columna
+            IdFactura: parseInt(idfactura), // Factura en la segunda columna
+            //Producto: fila.find("td:eq(2)").text(), // Producto en la tercera columna
+            IdProducto: parseInt(fila.data("idproducto")),
+            Cantidad: parseInt(fila.find("td:eq(3)").text()), // Cantidad en la cuarta columna
+            PrecioUnitario: parseInt(fila.find("td:eq(4)").text()) // Precio Unitario en la quinta columna
+        };
+        datos.push(dato);
+    });
+
+    console.log("Actualizar: " + JSON.stringify(datos));
+    // Realiza una solicitud AJAX para enviar los datos al controlador
+    $.ajax({
+        url: "/Factura/ActualizarDetalle",
+        type: "POST",
+        data: JSON.stringify({ detalles: datos }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        traditional: true,
+        success: function (result) {
+
+            // Recorre la tabla para encontrar la fila correspondiente al IdFactura y actualízala
+            $("#tablaDetalles tbody tr").each(function () {
+                var fila = $(this);
+                var idFacturaEnFila = fila.find("td:eq(1)").text(); // Suponiendo que el IdFactura esté en la segunda columna                      
+                fila.find("td:eq(1)").text(idfactura); // Suponiendo que el IdProducto esté en la tercera columna
+            });
+            alert("la factura fue generada exitosamente con el N: " + idfactura);
+            console.log("actualizado");
+        },
+        error: function () {
+            console.log("Erro al actualizar");
+            // Maneja errores
+        }
+    });
+}
+
+
+
+$(document).ready(function () {
+    $("#limpiarCamposFactura").click(function () {
+        $("#NumeroFactura").val("");
+        $("#Fecha").val("");
+        $("#DocumentoCliente").val("");
+        $("#NombreCliente").val("");
+        $("#Subtotal").val("");
+        $("#Descuento").val("");
+        $("#Impuesto").val("");
+        $("#TotalDescuento").val("");
+        $("#TotalImpuesto").val("");
+        $("#Total").val("");
+        $("#TipoDePago").val("");
+        var filas = $("#tablaDetalles tbody tr");
+        filas.each(function () {
+            var fila = $(this);
+            var idFactura = fila.find("td:eq(1)").text(); 
+
+            // Validar que el campo ID Factura no esté vacío para cada fila
+            if (idFactura.trim() !== "") {
+                fila.remove();
+            }
+        });
+        //$("#tablaDetalles tbody").empty();
+    });
+});
+
+
+function validarFila(idFactura) {
+    if (idFactura.trim() !== "") {
+        return true; 
+    } else {
+        return false;
+    }
+}
 // Manejar el clic en el botón "Eliminar"
 $(document).on("click", ".eliminar-detalle", function () {
     var detalleId = $(this).data("detalle-id");

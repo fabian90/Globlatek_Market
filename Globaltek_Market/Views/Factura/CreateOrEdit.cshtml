@@ -17,7 +17,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.NumeroFactura, "Numero de la factura", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.NumeroFactura, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+            @Html.EditorFor(model => model.NumeroFactura, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", id = "NumeroFactura" } })
             @Html.ValidationMessageFor(model => model.NumeroFactura, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -33,7 +33,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.TipoDePago, "Tipo de pago", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownListFor(model => model.TipoDePago, ViewBag.OpcionesTipoDePago as SelectList, "Seleccione un tipo de pago", new { @class = "form-control" })
+            @Html.DropDownListFor(model => model.TipoDePago, ViewBag.OpcionesTipoDePago as SelectList, "Seleccione un tipo de pago", new { @class = "form-control",id= "TipoDePago" })
             @Html.ValidationMessageFor(model => model.TipoDePago, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -49,7 +49,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.NombreCliente, "Nombre Cliente", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.NombreCliente, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.NombreCliente, new { htmlAttributes = new { @class = "form-control",id= "NombreCliente" } })
             @Html.ValidationMessageFor(model => model.NombreCliente, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -106,9 +106,12 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
+            <input type="submit" value="Generar Factura" class="btn btn-default" />  
+            <input type="button" value="Limpiar" class="btn btn-default" id="limpiarCamposFactura" />
         </div>
     </div>
+
+    
 </div>
 }
 
@@ -178,143 +181,6 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-$(document).ready(function () {
-             $("#formCrearDetalle").submit(function (event) {         
-            event.preventDefault(); // Evitar el envío del formulario por defecto.
-            var formData=$(this).serialize(); // Serializar los datos del formulario.
-            $.ajax({
-            type: "POST" ,
-             url: "/Factura/CrearDetalle",
-            data: formData,
-            dataType: "json" ,
-            success: function (result) {
-            console.log(JSON.stringify(result));
-            // Maneja la respuesta del servidor aquí, por ejemplo, puedes mostrar un mensaje de éxito.
-            var nuevaFila=$("<tr>");
-        nuevaFila.append($("<td>").text(result.detalle.IdDetalle));
-            nuevaFila.append($("<td>").text(result.detalle.IdFactura));
-            nuevaFila.append($("<td>").text(result.producto.Nombre));
-                nuevaFila.data("idproducto", result.detalle.IdProducto);
-            nuevaFila.append($("<td>").text(result.detalle.Cantidad));
-            nuevaFila.append($("<td>").text(result.detalle.PrecioUnitario));
-            nuevaFila.append($("<td>").text(result.detalle.Cantidad * result.detalle.PrecioUnitario));
-            var botonEliminar = '<button class="btn btn-danger eliminar-detalle" data-detalle-id="' + result.detalle.IdDetalle + '">Eliminar</button>';
-            nuevaFila.append($(" <td>").html(botonEliminar));
-            $("#tablaDetalles tbody").append(nuevaFila);
-            alert("Detalle creado correctamente.");
-            // Limpiar campos
-            $("#IdProducto").val(""); // Reemplaza "#IdProducto" con el ID de tu campo
-            $("#Cantidad").val("");    // Reemplaza "#Cantidad" con el ID de tu campo
-            $("#PrecioUnitario").val(""); // Reemplaza "#PrecioUnitario" con el ID de tu campo
-            calcularSubTotalDetalle()
-            },
-            error: function (error) {
-            // Maneja cualquier error que ocurra durante la solicitud AJAX.
-            alert("Ocurrió un error al crear el detalle.");
-            }
-            });
-            });
-});
-
-
-        $(document).ready(function () {
-            $("#formCrearFactura").submit(function (event) {
-                event.preventDefault(); // Evitar el envío del formulario por defecto.
-                $("#TotalDescuento").prop("disabled", false);
-                $("#Subtotal").prop("disabled", false);
-                $("#TotalImpuesto").prop("disabled", false);
-                $("#Total").prop("disabled", false);
-                var formData = $(this).serialize(); // Serializar los datos del formulario.
-                console.log(JSON.stringify("Crear factura: "+formData));
-                $.ajax({
-                    type: "POST",
-                    url: "/Factura/Create",
-                    data: formData,
-                    dataType: "json",
-                    success: function (result) {
-                        $("#TotalDescuento").prop("disabled", true);
-                        $("#Subtotal").prop("disabled", true);
-                        $("#TotalImpuesto").prop("disabled", true);
-                        $("#Total").prop("disabled", true);
-                        console.log("Resultado: " + JSON.stringify(result));
-                        if (result.success === false) {
-                            if (result.errors && result.errors.length > 0) {
-                                // Limpiar y mostrar la lista de errores en el modal
-                                $('#errorList').empty();
-                                $.each(result.errors, function (index, error) {
-                                    $('#errorList').append('<li>' + error + '</li>');
-                                });
-
-                                // Mostrar el modal de errores
-                                $('#errorModal').modal('show');
-                            }
-                        }
-                        if (result.ultimaFac !=0)
-                        {
-                            console.log("factura: " + result.ultimaFac)
-                            Actualizados(result.ultimaFac);
-                        }
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log("estatus: "+xhr.status);
-                        if (xhr.status === 400) {
-                            var response = xhr.responseJSON;
-                            if (response.errors && response.errors.length > 0) {
-                                // Manejar los errores, por ejemplo, mostrarlos en una alerta
-                                var errorMessage = response.errors.join('\n');
-                                alert(errorMessage);
-                            }
-                        } else {
-                            // Otra lógica de manejo de errores si es necesario
-                            alert('Error en la solicitud.');
-                        }
-                        $("#TotalDescuento").prop("disabled", true);
-                        $("#Subtotal").prop("disabled", true);
-                        $("#TotalImpuesto").prop("disabled", true);
-                        $("#Total").prop("disabled", true);
-                    }
-                });
-            });
-        });
-
-
-        function Actualizados(idfactura)
-        {
-            console.log("Si pasa: " + idfactura);
-            // Obtener los datos de la tabla y convertirlos a un formato que puedas enviar al controlador
-            var datos = [];
-            $("#tablaDetalles tbody tr").each(function () {
-                var fila = $(this);
-                var dato = {
-                    IdDetalle: parseInt(fila.find("td:eq(0)").text()), // ID en la primera columna
-                    //IdFactura: fila.find("td:eq(1)").text(), // Factura en la segunda columna
-                    IdFactura: parseInt(idfactura), // Factura en la segunda columna
-                    //Producto: fila.find("td:eq(2)").text(), // Producto en la tercera columna
-                    IdProducto: parseInt( fila.data("idproducto")), 
-                    Cantidad: parseInt( fila.find("td:eq(3)").text()), // Cantidad en la cuarta columna
-                    PrecioUnitario: parseInt( fila.find("td:eq(4)").text()) // Precio Unitario en la quinta columna
-                };
-                datos.push(dato);
-            });
-
-            console.log("Actualizar: " + JSON.stringify(datos));
-            // Realiza una solicitud AJAX para enviar los datos al controlador
-            $.ajax({
-                url: "/Factura/ActualizarDetalle",
-                type: "POST",
-                data: JSON.stringify(datos),
-                dataType: "json",
-                traditional: true,
-                success: function (result) {
-                    console.log("actualizado");
-                    // Maneja la respuesta del controlador
-                },
-                error: function () {
-                    console.log("Erro al actualizar");
-                    // Maneja errores
-                }
-            });
-        }
 
     </script>
     <script src="~/Scripts/factura-Script.js"></script>

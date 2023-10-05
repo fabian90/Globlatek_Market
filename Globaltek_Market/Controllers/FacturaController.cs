@@ -89,7 +89,7 @@ namespace Globaltek_Market.Controllers
                     }
                 int ultimoIdFactura= _facturaBusiness.Guardar(facturaDto).Result.IdFactura;
                 //return RedirectToAction("Create");
-                return Json(new { success = true, message = "Factura creada o actualizada exitosamente",ultimaFac= ultimoIdFactura });
+                return Json(new { success = true, message = "Factura creada o actualizada exitosamente",ultimaFac= ultimoIdFactura,ultimoNumFact= ultimoNumeroFactura });
             }
             var opcionesTipoDePago = new SelectList(new[]
            {
